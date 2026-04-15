@@ -659,14 +659,37 @@ function updateProgress() {
   document.getElementById('progress-label').textContent = checkedItems + ' / ' + totalItems;
 }
 
-function handleSubmit() {
+const GETFORM_ENDPOINT = 'https://forminit.com/f/bjq29qm5x79';
+
+async function handleSubmit() {
   const name = document.getElementById('input-name').value.trim();
   const email = document.getElementById('input-email').value.trim();
+  const btn = document.querySelector('.btn-submit');
 
   if (!email || !email.includes('@')) {
     document.getElementById('input-email').style.borderColor = 'rgba(224,75,74,.6)';
     document.getElementById('input-email').focus();
     return;
+  }
+
+  btn.textContent = 'Enviando...';
+  btn.style.opacity = '0.7';
+  btn.disabled = true;
+
+  try {
+    const formData = new FormData();
+    formData.append('nome', name || '(não informado)');
+    formData.append('email', email);
+    formData.append('origem', 'Checklist Regulariza.Pro');
+    formData.append('data', new Date().toLocaleString('pt-BR'));
+
+    await fetch(GETFORM_ENDPOINT, {
+      method: 'POST',
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+  } catch (err) {
+    console.warn('Getform:', err);
   }
 
   document.getElementById('capture-section').style.display = 'none';
